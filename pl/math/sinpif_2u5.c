@@ -1,7 +1,7 @@
 /*
  * Single-precision scalar sinpi function.
  *
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
@@ -36,11 +36,11 @@ sinpif (float x)
   /* Edge cases for when sinpif should be exactly 0. (Integers)
      0x1p23 is the limit for single precision to store any decimal places.  */
   if (r >= 0x1p23f)
-    return 0;
+    return asfloat (sign);
 
   int32_t m = roundf (r);
   if (m == r)
-    return 0;
+    return asfloat (sign);
 
   /* For very small inputs, squaring r causes underflow.
      Values below this threshold can be approximated via sinpi(x) ~= pi*x.  */
@@ -75,9 +75,11 @@ sinpif (float x)
   return asfloat (asuint (y * r) ^ sign);
 }
 
+#if WANT_TRIGPI_TESTS
 PL_SIG (S, F, 1, sinpi, -0.9, 0.9)
 PL_TEST_ULP (sinpif, 1.99)
 PL_TEST_SYM_INTERVAL (sinpif, 0, 0x1p-31, 5000)
 PL_TEST_SYM_INTERVAL (sinpif, 0x1p-31, 0.5, 10000)
 PL_TEST_SYM_INTERVAL (sinpif, 0.5, 0x1p22f, 10000)
 PL_TEST_SYM_INTERVAL (sinpif, 0x1p22f, inf, 10000)
+#endif

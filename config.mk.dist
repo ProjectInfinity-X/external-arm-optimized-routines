@@ -48,9 +48,17 @@ math-testflags =
 string-cflags = -falign-functions=64
 networking-cflags =
 
-# Use if mpfr is available on the target for ulp error checking.
-#math-ldlibs += -lmpfr -lgmp
-#math-cflags += -DUSE_MPFR
+# Use if mpfr is available on the target for ulp error checking. If
+# enabling this, it is advised to disable fenv checks by uncommenting
+# the two lines at the bottom of this block.
+USE_MPFR=0
+math-cflags += -DUSE_MPFR=$(USE_MPFR)
+ifeq ($(USE_MPFR), 1)
+  math-ldlibs += -lmpfr -lgmp
+endif
+# Disable fenv checks
+#math-ulpflags = -q -f
+#math-testflags = -nostatus
 
 # Use with gcc.
 math-cflags += -frounding-math -fexcess-precision=standard -fno-stack-protector
@@ -88,9 +96,9 @@ math-cflags += -DWANT_SIMD_EXCEPT=$(WANT_SIMD_EXCEPT)
 WANT_EXP10_TESTS = 1
 math-cflags += -DWANT_EXP10_TESTS=$(WANT_EXP10_TESTS)
 
-# Disable fenv checks
-#math-ulpflags = -q -f
-#math-testflags = -nostatus
+# If set to 1, enable tests for sinpi and cospi.
+WANT_TRIGPI_TESTS = 1
+math-cflags += -DWANT_TRIGPI_TESTS=$(WANT_TRIGPI_TESTS)
 
 # Remove GNU Property Notes from asm files.
 #string-cflags += -DWANT_GNU_PROPERTY=0
@@ -100,3 +108,9 @@ math-cflags += -DWANT_EXP10_TESTS=$(WANT_EXP10_TESTS)
 
 # Avoid auto-vectorization of scalar code and unroll loops
 networking-cflags += -O2 -fno-tree-vectorize -funroll-loops
+
+# Provide *_finite symbols and some of the glibc hidden symbols
+# so libmathlib can be used with binaries compiled against glibc
+# to interpose math functions with both static and dynamic linking
+USE_GLIBC_ABI = 1
+math-cflags += -DUSE_GLIBC_ABI=$(USE_GLIBC_ABI)

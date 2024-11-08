@@ -1,7 +1,7 @@
 /*
  * Double-precision scalar sinpi function.
  *
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
@@ -42,12 +42,12 @@ sinpi (double x)
   /* Edge cases for when sinpif should be exactly 0. (Integers)
      0x1p53 is the limit for single precision to store any decimal places.  */
   if (r >= 0x1p53)
-    return 0;
+    return asdouble (sign);
 
   /* If x is an integer, return 0.  */
   uint64_t m = (uint64_t) r;
   if (r == m)
-    return 0;
+    return asdouble (sign);
 
   /* For very small inputs, squaring r causes underflow.
      Values below this threshold can be approximated via sinpi(x) ≈ pi*x.  */
@@ -82,9 +82,11 @@ sinpi (double x)
   return asdouble (asuint64 (y) ^ sign);
 }
 
+#if WANT_TRIGPI_TESTS
 PL_SIG (S, D, 1, sinpi, -0.9, 0.9)
 PL_TEST_ULP (sinpi, 2.53)
 PL_TEST_SYM_INTERVAL (sinpi, 0, 0x1p-63, 5000)
 PL_TEST_SYM_INTERVAL (sinpi, 0x1p-63, 0.5, 10000)
 PL_TEST_SYM_INTERVAL (sinpi, 0.5, 0x1p51, 10000)
 PL_TEST_SYM_INTERVAL (sinpi, 0x1p51, inf, 10000)
+#endif
