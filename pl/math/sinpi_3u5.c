@@ -9,8 +9,8 @@
 #include <math.h>
 #include "mathlib.h"
 #include "math_config.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 #include "poly_scalar_f64.h"
 
 /* Taylor series coefficents for sin(pi * x).
@@ -25,6 +25,8 @@ static const double poly[]
 	-0x1.012a9870eeb7dp-25 };
 
 #define Shift 0x1.8p+52
+/* TODO Store constant in structure for more efficient load.  */
+#define Pi 0x1.921fb54442d18p+1
 
 /* Approximation for scalar double-precision sinpi(x).
    Maximum error: 3.03 ULP:
@@ -33,7 +35,7 @@ static const double poly[]
 double
 sinpi (double x)
 {
-  if (isinf (x))
+  if (isinf (x) || isnan (x))
     return __math_invalid (x);
 
   double r = asdouble (asuint64 (x) & ~0x8000000000000000);
@@ -52,7 +54,7 @@ sinpi (double x)
   /* For very small inputs, squaring r causes underflow.
      Values below this threshold can be approximated via sinpi(x) ≈ pi*x.  */
   if (r < 0x1p-63)
-    return M_PI * x;
+    return Pi * x;
 
   /* Any non-integer values >= 0x1x51 will be int + 0.5.
      These values should return exactly 1 or -1.  */
@@ -83,10 +85,10 @@ sinpi (double x)
 }
 
 #if WANT_TRIGPI_TESTS
-PL_SIG (S, D, 1, sinpi, -0.9, 0.9)
-PL_TEST_ULP (sinpi, 2.53)
-PL_TEST_SYM_INTERVAL (sinpi, 0, 0x1p-63, 5000)
-PL_TEST_SYM_INTERVAL (sinpi, 0x1p-63, 0.5, 10000)
-PL_TEST_SYM_INTERVAL (sinpi, 0.5, 0x1p51, 10000)
-PL_TEST_SYM_INTERVAL (sinpi, 0x1p51, inf, 10000)
+TEST_SIG (S, D, 1, sinpi, -0.9, 0.9)
+TEST_ULP (sinpi, 2.53)
+TEST_SYM_INTERVAL (sinpi, 0, 0x1p-63, 5000)
+TEST_SYM_INTERVAL (sinpi, 0x1p-63, 0.5, 10000)
+TEST_SYM_INTERVAL (sinpi, 0.5, 0x1p51, 10000)
+TEST_SYM_INTERVAL (sinpi, 0x1p51, inf, 10000)
 #endif

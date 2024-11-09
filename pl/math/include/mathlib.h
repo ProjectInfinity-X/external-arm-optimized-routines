@@ -28,6 +28,7 @@ float sinhf (float);
 float sinpif (float);
 float tanf (float);
 float tanhf (float);
+float tanpif (float);
 void sincospif (float, float *, float *);
 void sincospi (double, double *, double *);
 
@@ -49,13 +50,15 @@ double log1p (double);
 double sinh (double);
 double sinpi (double);
 double tanh (double);
+double tanpi (double);
 
 long double cospil (long double);
 long double erfinvl (long double);
 long double exp10l (long double);
 long double sinpil (long double);
+long double tanpil (long double);
 
-#if __aarch64__
+#if __aarch64__ && __linux__
 # if __GNUC__ >= 5
 typedef __Float32x4_t __f32x4_t;
 typedef __Float64x2_t __f64x2_t;
@@ -132,6 +135,7 @@ __vpcs __f32x4_t _ZGVnN4v_tanf (__f32x4_t);
 __vpcs __f64x2_t _ZGVnN2v_tan (__f64x2_t);
 __vpcs __f32x4_t _ZGVnN4v_tanhf (__f32x4_t);
 __vpcs __f64x2_t _ZGVnN2v_tanh (__f64x2_t);
+__vpcs __f32x4_t _ZGVnN4v_tanpif (__f32x4_t);
 __vpcs void _ZGVnN4vl4l4_sincosf (__f32x4_t, __f32x4_t *, __f32x4_t *);
 __vpcs void _ZGVnN2vl8l8_sincos (__f64x2_t, __f64x2_t *, __f64x2_t *);
 __vpcs void _ZGVnN4vl4l4_sincospif (__f32x4_t, __f32x4_t *, __f32x4_t *);
@@ -207,8 +211,10 @@ svfloat32_t _ZGVsMxv_tanf (svfloat32_t, svbool_t);
 svfloat64_t _ZGVsMxv_tan (svfloat64_t, svbool_t);
 void _ZGVsMxvl4l4_sincosf (svfloat32_t, float *, float *, svbool_t);
 void _ZGVsMxvl8l8_sincos (svfloat64_t, double *, double *, svbool_t);
-# endif
+void _ZGVsMxvl4l4_sincospif (svfloat32_t, float *, float *, svbool_t);
+void _ZGVsMxvl8l8_sincospi (svfloat64_t, double *, double *, svbool_t);
+#  endif
 
-#endif
+# endif
 
 #endif

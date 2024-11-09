@@ -27,7 +27,17 @@ LDLIBS =
 AR = $(CROSS_COMPILE)ar
 RANLIB = $(CROSS_COMPILE)ranlib
 INSTALL = install
-OS = $(shell uname)
+# Detect OS.
+# Assume Unix environment: Linux, Darwin, or Msys.
+OS := $(shell uname -s)
+OS := $(patsubst MSYS%,Msys,$(OS))
+# Following math dependencies can be adjusted in config file
+# if necessary, e.g. for Msys.
+libm-libs = -lm
+libc-libs = -lc
+mpfr-libs = -lmpfr
+gmp-libs = -lgmp
+mpc-libs = -lmpc
 
 all:
 

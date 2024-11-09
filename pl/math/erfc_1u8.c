@@ -1,13 +1,13 @@
 /*
  * Double-precision erfc(x) function.
  *
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
 #include "math_config.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 #define Shift 0x1p45
 #define P20 0x1.5555555555555p-2 /* 1/3.  */
@@ -86,7 +86,7 @@ erfc (double x)
       /* Lookup erfc(r) and scale(r) in tables, e.g. set erfc(r) to 1 and scale
 	 to 2/sqrt(pi), when x reduced to r = 0.  */
       double z = a + Shift;
-      uint64_t i = asuint64 (z);
+      uint64_t i = asuint64 (z) - asuint64 (Shift);
       double r = z - Shift;
       /* These values are scaled by 2^128.  */
       double erfcr = __erfc_data.tab[i].erfc;
@@ -144,10 +144,10 @@ erfc (double x)
   return __math_uflow (0);
 }
 
-PL_SIG (S, D, 1, erfc, -6.0, 28.0)
-PL_TEST_ULP (erfc, 1.21)
-PL_TEST_SYM_INTERVAL (erfc, 0, 0x1p-26, 40000)
-PL_TEST_INTERVAL (erfc, 0x1p-26, 28.0, 100000)
-PL_TEST_INTERVAL (erfc, -0x1p-26, -6.0, 100000)
-PL_TEST_INTERVAL (erfc, 28.0, inf, 40000)
-PL_TEST_INTERVAL (erfc, -6.0, -inf, 40000)
+TEST_SIG (S, D, 1, erfc, -6.0, 28.0)
+TEST_ULP (erfc, 1.21)
+TEST_SYM_INTERVAL (erfc, 0, 0x1p-26, 40000)
+TEST_INTERVAL (erfc, 0x1p-26, 28.0, 100000)
+TEST_INTERVAL (erfc, -0x1p-26, -6.0, 100000)
+TEST_INTERVAL (erfc, 28.0, inf, 40000)
+TEST_INTERVAL (erfc, -6.0, -inf, 40000)

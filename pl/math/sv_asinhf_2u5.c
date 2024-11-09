@@ -1,14 +1,14 @@
 /*
  * Single-precision SVE asinh(x) function.
  *
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
 #include "sv_math.h"
 #include "include/mathlib.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 #include "sv_log1pf_inline.h"
 
@@ -47,9 +47,10 @@ svfloat32_t SV_NAME_F1 (asinh) (svfloat32_t x, const svbool_t pg)
   return svreinterpret_f32 (svorr_x (pg, sign, svreinterpret_u32 (y)));
 }
 
-PL_SIG (SV, F, 1, asinh, -10.0, 10.0)
-PL_TEST_ULP (SV_NAME_F1 (asinh), 1.98)
-PL_TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 0, 0x1p-12, 4000)
-PL_TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 0x1p-12, 1.0, 20000)
-PL_TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 1.0, 0x1p64, 20000)
-PL_TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 0x1p64, inf, 4000)
+TEST_SIG (SV, F, 1, asinh, -10.0, 10.0)
+TEST_ULP (SV_NAME_F1 (asinh), 1.98)
+TEST_DISABLE_FENV (SV_NAME_F1 (asinh))
+TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 0, 0x1p-12, 4000)
+TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 0x1p-12, 1.0, 20000)
+TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 1.0, 0x1p64, 20000)
+TEST_SYM_INTERVAL (SV_NAME_F1 (asinh), 0x1p64, inf, 4000)

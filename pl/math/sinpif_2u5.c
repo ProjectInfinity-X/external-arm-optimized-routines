@@ -7,8 +7,8 @@
 
 #include "mathlib.h"
 #include "math_config.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 /* Taylor series coefficents for sin(pi * x).  */
 #define C0 0x1.921fb6p1f
@@ -27,7 +27,7 @@
 float
 sinpif (float x)
 {
-  if (isinf (x))
+  if (isinf (x) || isnan (x))
     return __math_invalidf (x);
 
   float r = asfloat (asuint (x) & ~0x80000000);
@@ -76,10 +76,10 @@ sinpif (float x)
 }
 
 #if WANT_TRIGPI_TESTS
-PL_SIG (S, F, 1, sinpi, -0.9, 0.9)
-PL_TEST_ULP (sinpif, 1.99)
-PL_TEST_SYM_INTERVAL (sinpif, 0, 0x1p-31, 5000)
-PL_TEST_SYM_INTERVAL (sinpif, 0x1p-31, 0.5, 10000)
-PL_TEST_SYM_INTERVAL (sinpif, 0.5, 0x1p22f, 10000)
-PL_TEST_SYM_INTERVAL (sinpif, 0x1p22f, inf, 10000)
+TEST_SIG (S, F, 1, sinpi, -0.9, 0.9)
+TEST_ULP (sinpif, 1.99)
+TEST_SYM_INTERVAL (sinpif, 0, 0x1p-31, 5000)
+TEST_SYM_INTERVAL (sinpif, 0x1p-31, 0.5, 10000)
+TEST_SYM_INTERVAL (sinpif, 0.5, 0x1p22f, 10000)
+TEST_SYM_INTERVAL (sinpif, 0x1p22f, inf, 10000)
 #endif

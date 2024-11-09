@@ -1,12 +1,12 @@
 /*
- * Single-precision vector acosh(x) function.
- * Copyright (c) 2023, Arm Limited.
+ * Double-precision vector acosh(x) function.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
 #include "v_math.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 #define WANT_V_LOG1P_K0_SHORTCUT 1
 #include "v_log1p_inline.h"
@@ -45,9 +45,8 @@ VPCS_ATTR float64x2_t V_NAME_D1 (acosh) (float64x2_t x)
     x = vbslq_f64 (special, vreinterpretq_f64_u64 (d->one), x);
 #endif
 
-  float64x2_t xm1 = vsubq_f64 (x, v_f64 (1));
-  float64x2_t y;
-  y = vaddq_f64 (x, v_f64 (1));
+  float64x2_t xm1 = vsubq_f64 (x, v_f64 (1.0));
+  float64x2_t y = vaddq_f64 (x, v_f64 (1.0));
   y = vmulq_f64 (y, xm1);
   y = vsqrtq_f64 (y);
   y = vaddq_f64 (xm1, y);
@@ -57,10 +56,10 @@ VPCS_ATTR float64x2_t V_NAME_D1 (acosh) (float64x2_t x)
   return log1p_inline (y, &d->log1p_consts);
 }
 
-PL_SIG (V, D, 1, acosh, 1.0, 10.0)
-PL_TEST_ULP (V_NAME_D1 (acosh), 2.53)
-PL_TEST_EXPECT_FENV (V_NAME_D1 (acosh), WANT_SIMD_EXCEPT)
-PL_TEST_INTERVAL (V_NAME_D1 (acosh), 1, 0x1p511, 90000)
-PL_TEST_INTERVAL (V_NAME_D1 (acosh), 0x1p511, inf, 10000)
-PL_TEST_INTERVAL (V_NAME_D1 (acosh), 0, 1, 1000)
-PL_TEST_INTERVAL (V_NAME_D1 (acosh), -0, -inf, 10000)
+TEST_SIG (V, D, 1, acosh, 1.0, 10.0)
+TEST_ULP (V_NAME_D1 (acosh), 2.53)
+TEST_DISABLE_FENV_IF_NOT (V_NAME_D1 (acosh), WANT_SIMD_EXCEPT)
+TEST_INTERVAL (V_NAME_D1 (acosh), 1, 0x1p511, 90000)
+TEST_INTERVAL (V_NAME_D1 (acosh), 0x1p511, inf, 10000)
+TEST_INTERVAL (V_NAME_D1 (acosh), 0, 1, 1000)
+TEST_INTERVAL (V_NAME_D1 (acosh), -0, -inf, 10000)

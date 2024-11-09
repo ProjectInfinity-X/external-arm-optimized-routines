@@ -1,14 +1,14 @@
 /*
  * Single-precision vector acos(x) function.
  *
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
 #include "v_math.h"
 #include "poly_advsimd_f32.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 static const struct data
 {
@@ -57,7 +57,7 @@ special_case (float32x4_t x, float32x4_t y, uint32x4_t special)
 
    The largest observed error in this region is 1.32 ulps,
    _ZGVnN4v_acosf (0x1.15ba56p-1) got 0x1.feb33p-1
-			   want 0x1.feb32ep-1.  */
+				 want 0x1.feb32ep-1.  */
 float32x4_t VPCS_ATTR V_NAME_F1 (acos) (float32x4_t x)
 {
   const struct data *d = ptr_barrier (&data);
@@ -102,12 +102,12 @@ float32x4_t VPCS_ATTR V_NAME_F1 (acos) (float32x4_t x)
   return vfmaq_f32 (add, mul, y);
 }
 
-PL_SIG (V, F, 1, acos, -1.0, 1.0)
-PL_TEST_ULP (V_NAME_F1 (acos), 0.82)
-PL_TEST_EXPECT_FENV (V_NAME_F1 (acos), WANT_SIMD_EXCEPT)
-PL_TEST_INTERVAL (V_NAME_F1 (acos), 0, 0x1p-26, 5000)
-PL_TEST_INTERVAL (V_NAME_F1 (acos), 0x1p-26, 0.5, 50000)
-PL_TEST_INTERVAL (V_NAME_F1 (acos), 0.5, 1.0, 50000)
-PL_TEST_INTERVAL (V_NAME_F1 (acos), 1.0, 0x1p11, 50000)
-PL_TEST_INTERVAL (V_NAME_F1 (acos), 0x1p11, inf, 20000)
-PL_TEST_INTERVAL (V_NAME_F1 (acos), -0, -inf, 20000)
+TEST_SIG (V, F, 1, acos, -1.0, 1.0)
+TEST_ULP (V_NAME_F1 (acos), 0.82)
+TEST_DISABLE_FENV_IF_NOT (V_NAME_F1 (acos), WANT_SIMD_EXCEPT)
+TEST_INTERVAL (V_NAME_F1 (acos), 0, 0x1p-26, 5000)
+TEST_INTERVAL (V_NAME_F1 (acos), 0x1p-26, 0.5, 50000)
+TEST_INTERVAL (V_NAME_F1 (acos), 0.5, 1.0, 50000)
+TEST_INTERVAL (V_NAME_F1 (acos), 1.0, 0x1p11, 50000)
+TEST_INTERVAL (V_NAME_F1 (acos), 0x1p11, inf, 20000)
+TEST_INTERVAL (V_NAME_F1 (acos), -0, -inf, 20000)

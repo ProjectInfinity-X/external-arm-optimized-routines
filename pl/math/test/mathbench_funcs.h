@@ -35,7 +35,7 @@
 
 /* No auto-generated wrappers for binary functions - they have be
    manually defined in mathbench_wrappers.h. We have to define silent
-   macros for them anyway as they will be emitted by PL_SIG.  */
+   macros for them anyway as they will be emitted by TEST_SIG.  */
 #define _ZSF2(...)
 #define _ZSD2(...)
 #define _ZVF2(...)
@@ -45,7 +45,7 @@
 
 #include "mathbench_funcs_gen.h"
 
-/* PL_SIG only emits entries for unary functions, since if a function
+/* TEST_SIG only emits entries for unary functions, since if a function
    needs to be wrapped in mathbench there is no way for it to know the
    same of the wrapper. Add entries for binary functions, or any other
    exotic signatures that need wrapping, below.  */
@@ -56,6 +56,7 @@
 {"sincospif", 'f', 0, -3.1, 3.1, {.f = sincospif_wrap}},
 {"sincospi", 'd', 0, -3.1, 3.1, {.d = sincospi_wrap}},
 
+#if __linux__
 {"_ZGVnN4vv_atan2f", 'f', 'n', -10.0, 10.0, {.vnf = _Z_atan2f_wrap}},
 {"_ZGVnN2vv_atan2",  'd', 'n', -10.0, 10.0, {.vnd = _Z_atan2_wrap}},
 {"_ZGVnN4vv_hypotf", 'f', 'n', -10.0, 10.0, {.vnf = _Z_hypotf_wrap}},
@@ -72,7 +73,7 @@
 {"_ZGVnN4v_cexpif", 'f', 'n', -3.1, 3.1, {.vnf = _Z_cexpif_wrap}},
 {"_ZGVnN2v_cexpi", 'd', 'n', -3.1, 3.1, {.vnd = _Z_cexpi_wrap}},
 
-#if WANT_SVE_MATH
+# if WANT_SVE_MATH
 {"_ZGVsMxvv_atan2f", 'f', 's', -10.0, 10.0, {.svf = _Z_sv_atan2f_wrap}},
 {"_ZGVsMxvv_atan2",  'd', 's', -10.0, 10.0, {.svd = _Z_sv_atan2_wrap}},
 {"_ZGVsMxvv_hypotf", 'f', 's', -10.0, 10.0, {.svf = _Z_sv_hypotf_wrap}},
@@ -89,7 +90,10 @@
 {"y_ZGVsMxvv_pow",   'd', 's', -10.0, 10.0, {.svd = y_Z_sv_pow}},
 {"_ZGVsMxvl4l4_sincosf", 'f', 's', -3.1, 3.1, {.svf = _Z_sv_sincosf_wrap}},
 {"_ZGVsMxvl8l8_sincos", 'd', 's', -3.1, 3.1, {.svd = _Z_sv_sincos_wrap}},
+{"_ZGVsMxvl4l4_sincospif", 'f', 's', -3.1, 3.1, {.svf = _Z_sv_sincospif_wrap}},
+{"_ZGVsMxvl8l8_sincospi", 'd', 's', -3.1, 3.1, {.svd = _Z_sv_sincospi_wrap}},
 {"_ZGVsMxv_cexpif", 'f', 's', -3.1, 3.1, {.svf = _Z_sv_cexpif_wrap}},
 {"_ZGVsMxv_cexpi", 'd', 's', -3.1, 3.1, {.svd = _Z_sv_cexpi_wrap}},
+# endif
 #endif
     // clang-format on

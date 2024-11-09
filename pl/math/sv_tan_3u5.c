@@ -1,14 +1,14 @@
 /*
  * Double-precision SVE tan(x) function.
  *
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
 #include "sv_math.h"
 #include "poly_sve_f64.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 static const struct data
 {
@@ -93,7 +93,8 @@ svfloat64_t SV_NAME_D1 (tan) (svfloat64_t x, svbool_t pg)
   return svdiv_x (pg, n, d);
 }
 
-PL_SIG (SV, D, 1, tan, -3.1, 3.1)
-PL_TEST_ULP (SV_NAME_D1 (tan), 2.99)
-PL_TEST_SYM_INTERVAL (SV_NAME_D1 (tan), 0, 0x1p23, 500000)
-PL_TEST_SYM_INTERVAL (SV_NAME_D1 (tan), 0x1p23, inf, 5000)
+TEST_SIG (SV, D, 1, tan, -3.1, 3.1)
+TEST_ULP (SV_NAME_D1 (tan), 2.99)
+TEST_DISABLE_FENV (SV_NAME_D1 (tan))
+TEST_SYM_INTERVAL (SV_NAME_D1 (tan), 0, 0x1p23, 500000)
+TEST_SYM_INTERVAL (SV_NAME_D1 (tan), 0x1p23, inf, 5000)

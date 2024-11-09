@@ -7,13 +7,13 @@
 
 #include "mathlib.h"
 #include "sv_math.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 #include "poly_sve_f64.h"
 
 static const struct data
 {
-  double poly[10];
+  double poly[10], range_val;
 } data = {
   /* Polynomial coefficients generated using Remez algorithm,
      see sinpi.sollya for details.  */
@@ -21,6 +21,7 @@ static const struct data
 	    -0x1.32d2cce62dc33p-1, 0x1.507834891188ep-4, -0x1.e30750a28c88ep-8,
 	    0x1.e8f48308acda4p-12, -0x1.6fc0032b3c29fp-16,
 	    0x1.af86ae521260bp-21, -0x1.012a9870eeb7dp-25 },
+  .range_val = 0x1p63,
 };
 
 /* A fast SVE implementation of sinpi.
@@ -37,8 +38,9 @@ svfloat64_t SV_NAME_D1 (sinpi) (svfloat64_t x, const svbool_t pg)
   svfloat64_t r = svsub_x (pg, x, n);
 
   /* Result should be negated based on if n is odd or not.  */
-  svuint64_t intn = svreinterpret_u64 (svcvt_s64_x (pg, n));
-  svuint64_t sign = svlsl_z (pg, intn, 63);
+  svbool_t cmp = svaclt (pg, x, d->range_val);
+  svuint64_t intn = svreinterpret_u64 (svcvt_s64_z (pg, n));
+  svuint64_t sign = svlsl_z (cmp, intn, 63);
 
   /* y = sin(r).  */
   svfloat64_t r2 = svmul_x (pg, r, r);
@@ -50,10 +52,11 @@ svfloat64_t SV_NAME_D1 (sinpi) (svfloat64_t x, const svbool_t pg)
 }
 
 #if WANT_TRIGPI_TESTS
-PL_SIG (SV, D, 1, sinpi, -0.9, 0.9)
-PL_TEST_ULP (SV_NAME_D1 (sinpi), 2.61)
-PL_TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0, 0x1p-63, 5000)
-PL_TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0x1p-63, 0.5, 10000)
-PL_TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0.5, 0x1p51, 10000)
-PL_TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0x1p51, inf, 10000)
+TEST_SIG (SV, D, 1, sinpi, -0.9, 0.9)
+TEST_ULP (SV_NAME_D1 (sinpi), 2.61)
+TEST_DISABLE_FENV (SV_NAME_D1 (sinpi))
+TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0, 0x1p-63, 5000)
+TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0x1p-63, 0.5, 10000)
+TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0.5, 0x1p51, 10000)
+TEST_SYM_INTERVAL (SV_NAME_D1 (sinpi), 0x1p51, inf, 10000)
 #endif

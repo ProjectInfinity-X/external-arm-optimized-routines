@@ -1,12 +1,12 @@
 /*
  * Single-precision SVE acosh(x) function.
- * Copyright (c) 2023, Arm Limited.
+ * Copyright (c) 2023-2024, Arm Limited.
  * SPDX-License-Identifier: MIT OR Apache-2.0 WITH LLVM-exception
  */
 
 #include "sv_math.h"
-#include "pl_sig.h"
-#include "pl_test.h"
+#include "test_sig.h"
+#include "test_defs.h"
 
 #define One 0x3f800000
 #define Thres 0x20000000 /* asuint(0x1p64) - One.  */
@@ -39,9 +39,10 @@ svfloat32_t SV_NAME_F1 (acosh) (svfloat32_t x, const svbool_t pg)
   return y;
 }
 
-PL_SIG (SV, F, 1, acosh, 1.0, 10.0)
-PL_TEST_ULP (SV_NAME_F1 (acosh), 2.29)
-PL_TEST_INTERVAL (SV_NAME_F1 (acosh), 0, 1, 500)
-PL_TEST_INTERVAL (SV_NAME_F1 (acosh), 1, 0x1p64, 100000)
-PL_TEST_INTERVAL (SV_NAME_F1 (acosh), 0x1p64, inf, 1000)
-PL_TEST_INTERVAL (SV_NAME_F1 (acosh), -0, -inf, 1000)
+TEST_SIG (SV, F, 1, acosh, 1.0, 10.0)
+TEST_ULP (SV_NAME_F1 (acosh), 2.29)
+TEST_DISABLE_FENV (SV_NAME_F1 (acosh))
+TEST_INTERVAL (SV_NAME_F1 (acosh), 0, 1, 500)
+TEST_INTERVAL (SV_NAME_F1 (acosh), 1, 0x1p64, 100000)
+TEST_INTERVAL (SV_NAME_F1 (acosh), 0x1p64, inf, 1000)
+TEST_INTERVAL (SV_NAME_F1 (acosh), -0, -inf, 1000)
