@@ -37,6 +37,9 @@ cc_defaults {
         // BSD libm doesn't set errno, and bionic was based on the BSDs.
         // https://github.com/ARM-software/optimized-routines/issues/16#issuecomment-572009659
         "-DWANT_ERRNO=0",
+        // Disable tests for routines that are not available.
+        "-DWANT_SIMD_TESTS=0",
+        "-DWANT_EXP10_TESTS=0",
         // Enable MOPS.
         "-DWANT_MOPS=1",
     ],
@@ -84,20 +87,33 @@ cc_defaults {
 cc_library_static {
     name: "libarm-optimized-routines-math",
     defaults: ["libarm-optimized-routines-defaults"],
-    exclude_srcs: [
-        // Provided by:
-        // bionic/libm/upstream-freebsd/lib/msun/src/s_erf.c
-        // bionic/libm/upstream-freebsd/lib/msun/src/s_erff.c
-        "math/erf.c",
-        "math/erf_data.c",
-        "math/erff.c",
-        "math/erff_data.c",
-    ],
     srcs: [
-        "math/*.c",
+        "math/cosf.c",
+        "math/exp.c",
+        "math/exp2.c",
+        "math/exp2f.c",
+        "math/exp2f_data.c",
+        "math/exp_data.c",
+        "math/expf.c",
+        "math/log.c",
+        "math/log2.c",
+        "math/log2_data.c",
+        "math/log2f.c",
+        "math/log2f_data.c",
+        "math/log_data.c",
+        "math/logf.c",
+        "math/logf_data.c",
+        "math/math_err.c",
+        "math/math_errf.c",
+        "math/pow.c",
+        "math/pow_log_data.c",
+        "math/powf.c",
+        "math/powf_log2_data.c",
+        "math/sincosf.c",
+        "math/sincosf_data.c",
+        "math/sinf.c",
     ],
 
-    // arch-specific settings
     arch: {
         arm64: {
             cflags: [
@@ -105,6 +121,11 @@ cc_library_static {
             ],
             srcs: [
                 "math/aarch64/*.c",
+            ],
+        },
+        riscv64: {
+            cflags: [
+                "-DHAVE_FAST_FMA=1",
             ],
         },
     },
@@ -164,7 +185,7 @@ cc_library_static {
             ],
             asflags: [
                 "-march=armv8-a+sve",
-            ]
+            ],
         },
     },
 }
